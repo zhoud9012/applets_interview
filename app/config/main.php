@@ -53,7 +53,11 @@ return [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'book'],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => 'book',
+                    'pluralize' => false //Yii 将在末端使用的控制器的名称自动变为复数 pluralize为false来禁用此行为
+                ],
             ],
         ],
 
