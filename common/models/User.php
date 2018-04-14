@@ -7,6 +7,8 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
+use yii\filters\RateLimitInterface;
+
 /**
  * User model
  *
@@ -21,7 +23,7 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  */
-class User extends ActiveRecord implements IdentityInterface
+class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
@@ -62,6 +64,42 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findIdentity($id)
     {
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    /**
+     * 返回在单位时间内允许的请求的最大数目，例如，[10, 60] 表示在60秒内最多请求10次。
+     * @param $request
+     * @param $action
+     * @return array
+     */
+    public function getRateLimit($request, $action)
+    {
+        return [5, 10];
+    }
+
+    /**
+     * 返回剩余的允许的请求数。
+     * @param $request
+     * @param $action
+     * @return array
+     */
+    public function loadAllowance($request, $action)
+    {
+        return [$this->allowance, $this->allowance_updated_at];
+    }
+
+    /**
+     * 保存请求时的UNIX时间戳。
+     * @param $request
+     * @param $action
+     * @param $allowance
+     * @param $timestamp
+     */
+    public function saveAllowance($request, $action, $allowance, $timestamp)
+    {
+        $this->allowance = $allowance;
+        $this->allowance_updated_at = $timestamp;
+        $this->save();
     }
 
     /**

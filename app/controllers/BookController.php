@@ -5,11 +5,18 @@ use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 
+use yii\filters\RateLimiter;
+
 class BookController extends \yii\rest\ActiveController
 {
     public $modelClass = 'app\models\Book';
     public function behaviors() {
         $behaviors = parent::behaviors();
+
+        $behaviors['rateLimiter'] = [
+            'class' => RateLimiter::className(),
+            'enableRateLimitHeaders' => true,
+        ];
 
         $behaviors['authenticator'] = [
             'class' => CompositeAuth::className(),
