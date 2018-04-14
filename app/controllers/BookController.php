@@ -24,7 +24,7 @@ class BookController extends \yii\rest\ActiveController
                 QueryParamAuth::className(),
             ],
         ];
-        
+
         $behaviors['contentNegotiator']['formats']['text/html'] = Response::FORMAT_JSON;
         return $behaviors;
     }
