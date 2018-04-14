@@ -18,6 +18,8 @@ return [
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
+            'enableSession' => false,//用户认证状态就不通过session来保持,因为RESTful APIs为无状态的
+            'loginUrl' => null,//属性为null（显示一个HTTP 403 错误而不是跳转到登录界面）
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
         'session' => [
