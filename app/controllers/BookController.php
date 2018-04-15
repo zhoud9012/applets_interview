@@ -1,15 +1,18 @@
 <?php
 
 namespace app\controllers;
+
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
-
 use yii\filters\RateLimiter;
+
+use app\models\Book;
 
 class BookController extends \yii\rest\ActiveController
 {
     public $modelClass = 'app\models\Book';
+
     public function behaviors() {
         $behaviors = parent::behaviors();
 
@@ -35,4 +38,43 @@ class BookController extends \yii\rest\ActiveController
         $behaviors['contentNegotiator']['formats']['text/html'] = Response::FORMAT_JSON;
         return $behaviors;
     }
+
+    public function actions()
+    {
+        $actions = parent::actions();
+        // 注销系统自带的实现方法
+        //unset($actions['index']);
+
+        //unset($actions['create']);
+        //unset($actions['update']);
+        //unset($actions['delete']);
+
+        return $actions;
+    }
+
+    //覆盖父类的actionIndex方法,并进行重写
+    public function actionIndex()
+    {
+        $request = \Yii::$app->request;
+        //$name = $request->get('name');
+
+        //return Book::find()->select(['*'])->leftJoin('user','book.id = user.id')->all();
+        //获取用户所有信息
+    }
+
+    /**
+     * @inheritdoc
+     */
+
+    protected function verbs()
+    {
+        return [
+            'index' => ['GET', 'HEAD'],
+            'view' => ['GET', 'HEAD'],
+            'create' => ['POST'],
+            'update' => ['PUT', 'PATCH'],
+            'delete' => ['DELETE'],
+        ];
+    }
+
 }
