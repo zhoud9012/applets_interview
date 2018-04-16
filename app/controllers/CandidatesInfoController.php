@@ -38,7 +38,7 @@ class CandidatesInfoController extends \yii\rest\Controller
 
     public function actionIndex()
     {
-        $usrBook = (new Query())
+        $query = (new Query())
             ->select([
                 'candidates_info.phone',
                 'candidates_info.name',
@@ -58,7 +58,7 @@ class CandidatesInfoController extends \yii\rest\Controller
             ->leftJoin('company_info','company_info.company_id = candidates_info.company_id')
             ->leftJoin('interviewer_info','interviewer_info.interviewer_id = candidates_info.interviewer_id')
             ->all();
-        return $usrBook;
+        return $query;
     }
 
 }
