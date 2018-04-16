@@ -7,6 +7,8 @@ use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\filters\RateLimiter;
 use yii\db\Query;
+use common\support\StringHelper;
+use app\models\OfficeInfo;
 
 class OfficeInfoController extends \yii\rest\Controller
 {
@@ -45,6 +47,15 @@ class OfficeInfoController extends \yii\rest\Controller
             ->from('office_info')
             ->all();
         return $query;
+    }
+
+    public function actionCreate()
+    {
+        $officeInfo = new OfficeInfo;
+        $officeInfo->office_id = StringHelper::uuid();
+        $officeInfo->office_name = $_POST['office_name'];
+        $officeInfo->save();
+        return $officeInfo->primaryKey;
     }
 
 }
