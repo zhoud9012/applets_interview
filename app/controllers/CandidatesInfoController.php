@@ -61,4 +61,35 @@ class CandidatesInfoController extends \yii\rest\Controller
         return $query;
     }
 
+    public function actionDynamic() {
+        $query = (new Query())
+            ->select([
+                'candidates_info.phone',
+                'candidates_info.name',
+                'candidates_info.email',
+                'candidates_info.office_id',
+                'interviewer_info.name as interviewer_name',
+                'candidates_info.interview_time',
+                'company_info.company_name',
+                'candidates_info.sign_in_time',
+                'candidates_info.interview_state',
+                'candidates_info.interview_result',
+                'candidates_info.interview_appraise',
+                'candidates_info.written_test_appraise'
+            ])
+            ->from('candidates_info')
+            ->leftJoin('user_applet','candidates_info.phone = user_applet.phone')
+            ->leftJoin('company_info','company_info.company_id = candidates_info.company_id')
+            ->leftJoin('interviewer_info','interviewer_info.interviewer_id = candidates_info.interviewer_id')
+            ->where([
+                'and',
+                ['>','candidates_info.interview_time',date('Y-m-d',strtotime('+1 day'))],
+                ['<','candidates_info.interview_time',date('Y-m-d',strtotime('+2 day'))],
+                ['or','candidates_info.interview_result = 1','candidates_info.interview_result = 4']
+            ])
+            //->createCommand()->getRawSql();
+            ->all();
+        return $query;
+    }
+
 }
