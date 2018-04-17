@@ -7,9 +7,9 @@ use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\filters\RateLimiter;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
 use common\support\OSS;
 use common\support\StringHelper;
+use yii\data\ActiveDataProvider;
 use yii;
 
 class CandidatesInfoController extends \yii\rest\Controller
@@ -38,6 +38,33 @@ class CandidatesInfoController extends \yii\rest\Controller
 
         $behaviors['contentNegotiator']['formats']['text/html'] = Response::FORMAT_JSON;
         return $behaviors;
+    }
+
+
+    public  function actions()
+    {
+        $actions = parent::actions();
+        unset($actions['index']);
+        return $actions;
+    }
+
+    /**
+     * 应试者信息过滤查询
+     * @return array
+     */
+    public function actionIndex()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+
+        $query = $this->__getSummaryInterviewer($paramsArr);
+
+        return new ActiveDataProvider(
+            [
+                'query'=>$query,
+                'pagination'=>['pageSize'=>5],
+            ]
+        );
     }
 
     /**
@@ -83,17 +110,6 @@ class CandidatesInfoController extends \yii\rest\Controller
         return ['where' => $where, 'params' => $params];
     }
 
-    /**
-     * 应试者信息过滤查询
-     * @return array
-     */
-    public function actionIndex()
-    {
-        $request = \Yii::$app->request;
-        $paramsArr = $request->get();
-        return $this->__getSummaryInterviewer($paramsArr);
-    }
-
     private function __getSummaryInterviewer($paramsArr)
     {
         $where = '1=1';
@@ -118,8 +134,8 @@ class CandidatesInfoController extends \yii\rest\Controller
             ->leftJoin('company_info','company_info.company_id = candidates_info.company_id')
             ->leftJoin('interviewer_info','interviewer_info.interviewer_id = candidates_info.interviewer_id')
             ->leftJoin('office_info','candidates_info.office_id = office_info.office_id')
-            ->where($whereSql['where'], $whereSql['params'])
-            ->all();
+            ->where($whereSql['where'], $whereSql['params']);
+            //->all();
     }
 
     /**
