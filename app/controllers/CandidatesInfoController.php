@@ -36,38 +36,66 @@ class CandidatesInfoController extends \yii\rest\Controller
         return $behaviors;
     }
 
-    public function actionIndex()
+    /**
+     * @param $where
+     * @param $paramsArr
+     * @return array
+     */
+    private static function __buildGetCandidatesInfoWhereSql($where,$paramsArr)
     {
-        $query = (new Query())
-            ->select([
-                'candidates_info.phone',
-                'candidates_info.name',
-                'candidates_info.email',
-                'candidates_info.office_id',
-                'interviewer_info.name as interviewer_name',
-                'candidates_info.interview_time',
-                'company_info.company_name',
-                'candidates_info.sign_in_time',
-                'candidates_info.interview_state',
-                'candidates_info.interview_result',
-                'candidates_info.interview_appraise',
-                'candidates_info.written_test_appraise'
-            ])
-            ->from('candidates_info')
-            ->leftJoin('user_applet','candidates_info.phone = user_applet.phone')
-            ->leftJoin('company_info','company_info.company_id = candidates_info.company_id')
-            ->leftJoin('interviewer_info','interviewer_info.interviewer_id = candidates_info.interviewer_id')
-            ->all();
-        return $query;
+
+        $params = [];
+
+        if (isset($paramsArr['candidates_name']) && !empty($paramsArr['candidates_name'])) {
+            $where = $where . " and (candidates_info.name like CONCAT('%', :candidates_name, '%'))";
+            $params[':candidates_name'] = $paramsArr['candidates_name'];
+        }
+
+        if (isset($paramsArr['phone']) && !empty($paramsArr['phone'])) {
+            $where = $where . " and (candidates_info.phone like CONCAT('%', :phone, '%'))";
+            $params[':phone'] = $paramsArr['phone'];
+        }
+
+        if (isset($paramsArr['office_name']) && !empty($paramsArr['office_name'])) {
+            $where = $where . " and (office_info.office_name = :office_name)";
+            $params[':office_name'] = $paramsArr['office_name'];
+        }
+
+        if (isset($paramsArr['interview_time_begin']) && !empty($paramsArr['interview_time_begin'])) {
+            $where = $where . ' and (candidates_info.interview_time >= :interview_time_begin)';
+            $params[':interview_time_begin'] = $paramsArr['interview_time_begin'] . ' 00:00:00';
+        }
+
+        if (isset($paramsArr['interview_time_end']) && !empty($paramsArr['interview_time_end'])) {
+            $where = $where . ' and (candidates_info.interview_time <= :interview_time_end)';
+            $params[':interview_time_end'] = $paramsArr['interview_time_end'] . ' 00:00:00';
+        }
+
+        if (isset($paramsArr['interview_result']) && !empty($paramsArr['interview_result'])) {
+            $where = $where . ' and (candidates_info.interview_result = :interview_result)';
+            $params[':interview_result'] = $paramsArr['interview_result'];
+        }
+
+        return ['where' => $where, 'params' => $params];
     }
 
-    public function actionDynamic() {
-        $query = (new Query())
+    /**
+     * 应试者信息过滤查询
+     * @return array
+     */
+    public function actionIndex()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+
+        $where = '1=1';
+        $whereSql = self::__buildGetCandidatesInfoWhereSql($where,$paramsArr);
+        return (new Query())
             ->select([
                 'candidates_info.phone',
-                'candidates_info.name',
+                'candidates_info.name as candidates_name',
                 'candidates_info.email',
-                'candidates_info.office_id',
+                'office_info.office_name',
                 'interviewer_info.name as interviewer_name',
                 'candidates_info.interview_time',
                 'company_info.company_name',
@@ -81,15 +109,56 @@ class CandidatesInfoController extends \yii\rest\Controller
             ->leftJoin('user_applet','candidates_info.phone = user_applet.phone')
             ->leftJoin('company_info','company_info.company_id = candidates_info.company_id')
             ->leftJoin('interviewer_info','interviewer_info.interviewer_id = candidates_info.interviewer_id')
+            ->leftJoin('office_info','candidates_info.office_id = office_info.office_id')
+            ->where($whereSql['where'], $whereSql['params'])
+            ->all();
+    }
+
+    /**
+     * 动态应试者信息查询
+     * 1.“暂无”和“爽约” 状态应试者
+     * 2.面试时间为当前时间的第二天的应试者
+     * 3.9点后查询新数据//貌似无需抓取
+     * @return array
+     */
+    public function actionDynamic() {
+        return (new Query())
+            ->select([
+                'candidates_info.phone',
+                'candidates_info.name as candidates_name',
+                'candidates_info.email',
+                'office_info.office_name',
+                'interviewer_info.name as interviewer_name',
+                'candidates_info.interview_time',
+                'company_info.company_name',
+                'candidates_info.sign_in_time',
+                'candidates_info.interview_state',
+                'candidates_info.interview_result',
+                'candidates_info.interview_appraise',
+                'candidates_info.written_test_appraise'
+            ])
+            ->from('candidates_info')
+            ->leftJoin('user_applet','candidates_info.phone = user_applet.phone')
+            ->leftJoin('company_info','company_info.company_id = candidates_info.company_id')
+            ->leftJoin('interviewer_info','interviewer_info.interviewer_id = candidates_info.interviewer_id')
+            ->leftJoin('office_info','candidates_info.office_id = office_info.office_id')
             ->where([
                 'and',
                 ['>','candidates_info.interview_time',date('Y-m-d',strtotime('+1 day'))],
                 ['<','candidates_info.interview_time',date('Y-m-d',strtotime('+2 day'))],
                 ['or','candidates_info.interview_result = 1','candidates_info.interview_result = 4']
             ])
-            //->createCommand()->getRawSql();
             ->all();
-        return $query;
+    }
+
+    public function actionExportCandidates()
+    {
+
+    }
+
+    public function actionImportCandidates()
+    {
+
     }
 
 }
