@@ -7,6 +7,10 @@ use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\filters\RateLimiter;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
+use common\support\OSS;
+use common\support\StringHelper;
+use yii;
 
 class CandidatesInfoController extends \yii\rest\Controller
 {
@@ -87,7 +91,11 @@ class CandidatesInfoController extends \yii\rest\Controller
     {
         $request = \Yii::$app->request;
         $paramsArr = $request->get();
+        return $this->__getSummaryInterviewer($paramsArr);
+    }
 
+    private function __getSummaryInterviewer($paramsArr)
+    {
         $where = '1=1';
         $whereSql = self::__buildGetCandidatesInfoWhereSql($where,$paramsArr);
         return (new Query())
@@ -121,7 +129,13 @@ class CandidatesInfoController extends \yii\rest\Controller
      * 3.9点后查询新数据//貌似无需抓取
      * @return array
      */
-    public function actionDynamic() {
+    public function actionDynamic()
+    {
+        return $this->__getDynamicInterviewer();
+    }
+
+    private function __getDynamicInterviewer()
+    {
         return (new Query())
             ->select([
                 'candidates_info.phone',
@@ -151,7 +165,84 @@ class CandidatesInfoController extends \yii\rest\Controller
             ->all();
     }
 
-    public function actionExportCandidates()
+
+    public function actionExportExl()
+    {
+
+    }
+
+    public function actionExportCsv()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+        Header("Content-type: application/octet-stream");
+        return $this->__exportCsv($paramsArr);
+    }
+
+    /**
+     * @param $paramsArr
+     * @return string
+     */
+    private function __exportCsv($paramsArr)
+    {
+        try {
+            set_time_limit(0);
+
+            //数据源
+           $data = $this->__getSummaryInterviewer($paramsArr);
+
+            //列标题
+            $columnTitles = ['序号','备注','bca'];
+
+            //创建目录
+            $exportDir = \Yii::getAlias("@runtime/web/xls/");
+            \yii\helpers\FileHelper::createDirectory($exportDir);
+
+            //创建文件
+            $fileName = sprintf("interview-data_%s.csv", time());
+            $allFilePath = $exportDir . $fileName;
+
+            $fp = fopen($allFilePath, 'w');
+
+            //boom头
+            fwrite($fp, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            //写入标题
+            fputcsv($fp, $columnTitles);
+
+            if (!empty($data)) {
+                $i = 1;
+                foreach ($data as $key => $val) {
+
+                    //装拼正文内容
+                    $contactArr = [
+                        $i,//序号
+                        $val['phone'], //签约金额
+                        $val['candidates_name'], //租用金额
+                    ];
+
+                    //写入正文
+                    fputcsv($fp, $contactArr);
+
+                    $i++;
+                }
+            }
+
+            $key = $fileName;
+            OSS::upload($key, $allFilePath);
+            @unlink($allFilePath);
+            $ossUrl = OSS::getUrl($key);
+
+            return $ossUrl . '?t=' . StringHelper::uuid();
+
+        } catch (\Exception $e) {
+            Yii::error((string)$e);
+            return '导出异常';
+        }
+    }
+
+
+    public function actionExportDynamic()
     {
 
     }
