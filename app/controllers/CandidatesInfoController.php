@@ -244,7 +244,7 @@ class CandidatesInfoController extends BaseController
             set_time_limit(0);
 
             //数据源
-            $data = $this->__getSummaryInterviewer($paramsArr)->all();
+            $data = $this->__getSummaryCandidatesInfo($paramsArr)->all();
 
             //列标题
             $columnTitles = ['序号','备注','bca'];
