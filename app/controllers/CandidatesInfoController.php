@@ -62,7 +62,7 @@ class CandidatesInfoController extends \yii\rest\Controller
         return new ActiveDataProvider(
             [
                 'query'=>$query,
-                'pagination'=>['pageSize'=>5],
+                'pagination'=>['pageSize'=>1],//分页大小设置
             ]
         );
     }
@@ -134,8 +134,8 @@ class CandidatesInfoController extends \yii\rest\Controller
             ->leftJoin('company_info','company_info.company_id = candidates_info.company_id')
             ->leftJoin('interviewer_info','interviewer_info.interviewer_id = candidates_info.interviewer_id')
             ->leftJoin('office_info','candidates_info.office_id = office_info.office_id')
-            ->where($whereSql['where'], $whereSql['params']);
-            //->all();
+            ->where($whereSql['where'], $whereSql['params'])
+            ->all();
     }
 
     /**
@@ -191,7 +191,7 @@ class CandidatesInfoController extends \yii\rest\Controller
     {
         $request = \Yii::$app->request;
         $paramsArr = $request->get();
-        Header("Content-type: application/octet-stream");
+
         return $this->__exportCsv($paramsArr);
     }
 
@@ -215,7 +215,7 @@ class CandidatesInfoController extends \yii\rest\Controller
             \yii\helpers\FileHelper::createDirectory($exportDir);
 
             //创建文件
-            $fileName = sprintf("interview-data_%s.csv", time());
+            $fileName = sprintf("interview-data_%s.csv",'a');
             $allFilePath = $exportDir . $fileName;
 
             $fp = fopen($allFilePath, 'w');
