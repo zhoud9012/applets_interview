@@ -17,6 +17,7 @@ use yii;
 class CandidatesInfoController extends BaseController
 {
     public $response;
+
     public function behaviors() {
         $behaviors = parent::behaviors();
 
@@ -78,8 +79,8 @@ class CandidatesInfoController extends BaseController
         $request = \Yii::$app->request;
         $paramsArr = $request->get();
 
-        $query = $this->__getSummaryInterviewer($paramsArr);
-        $this->response->statusCode = 500;//自定义HTTP返回码
+        $query = $this->__getSummaryCandidatesInfo($paramsArr);
+        //$this->response->statusCode = 500;//自定义HTTP返回码
         ErrorInfo::setAndReturn('0010101' );
 
         return new ActiveDataProvider(
@@ -133,7 +134,7 @@ class CandidatesInfoController extends BaseController
         return ['where' => $where, 'params' => $params];
     }
 
-    private function __getSummaryInterviewer($paramsArr)
+    private function __getSummaryCandidatesInfo($paramsArr)
     {
         $where = '1=1';
         $whereSql = self::__buildGetCandidatesInfoWhereSql($where,$paramsArr);
@@ -171,7 +172,7 @@ class CandidatesInfoController extends BaseController
      */
     public function actionDynamic()
     {
-        $query = $this->__getDynamicInterviewer();
+        $query = $this->__getDynamicCandidatesInfo();
         return new ActiveDataProvider(
             [
                 'query'=>$query,
@@ -180,7 +181,7 @@ class CandidatesInfoController extends BaseController
         );
     }
 
-    private function __getDynamicInterviewer()
+    private function __getDynamicCandidatesInfo()
     {
         return (new Query())
             ->select([
