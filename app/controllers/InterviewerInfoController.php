@@ -2,14 +2,19 @@
 
 namespace app\controllers;
 
+use common\error\ErrorInfo;
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\filters\RateLimiter;
+use yii\data\ActiveDataProvider;
 use yii\db\Query;
+use yii\base\Event;
+use yii;
 
-class InterviewerInfoController extends \yii\rest\Controller
+class InterviewerInfoController extends BaseController
 {
+    public $response;
 
     public function behaviors() {
         $behaviors = parent::behaviors();
@@ -37,9 +42,77 @@ class InterviewerInfoController extends \yii\rest\Controller
         return $behaviors;
     }
 
+    public function init() {
+        parent::init();
+        $this->response = Yii::$app->response;
+        //绑定事件
+        Event::on(Response::className(), Response::EVENT_BEFORE_SEND, [$this, 'formatDataBeforeSend']);
+    }
+
+    /**
+     * 使用 controller 中的 afterAction 方法，在响应完 action 之后，对数据格式化
+     * @param yii\base\Action $action
+     * @param mixed $result
+     * @return array
+     */
+    public function afterAction($action, $result)
+    {
+        $rs = parent::afterAction($action, $result);
+        return ['data' => $rs, 'error' => '0','status'=>$this->response->statusCode];
+    }
+
+    public  function actions()
+    {
+        $actions = parent::actions();
+        unset($actions['index']);
+        return $actions;
+    }
+
     public function actionIndex()
     {
-        $query = (new Query())
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+
+        $query = $this->__getSummaryInterviewer($paramsArr);
+        //$this->response->statusCode = 500;//自定义HTTP返回码
+        ErrorInfo::setAndReturn('0010101' );
+
+        return new ActiveDataProvider(
+            [
+                'query'=>$query,
+                'pagination'=>['pageSize'=>$paramsArr['pageSize']],//分页大小设置
+            ]
+        );
+    }
+
+    private function __buildSummaryInterviewerWhereSql($where,$paramsArr)
+    {
+        $params = [];
+
+        if (isset($paramsArr['interviewer_name']) && !empty($paramsArr['interviewer_name'])) {
+            $where = $where . " and (interviewer_info.name like CONCAT('%', :interviewer_name, '%'))";
+            $params[':interviewer_name'] = $paramsArr['interviewer_name'];
+        }
+
+        if (isset($paramsArr['phone']) && !empty($paramsArr['phone'])) {
+            $where = $where . " and (interviewer_name.phone like CONCAT('%', :phone, '%'))";
+            $params[':phone'] = $paramsArr['phone'];
+        }
+
+        if (isset($paramsArr['email']) && !empty($paramsArr['email'])) {
+            $where = $where . " and (interviewer_info.email like CONCAT('%', :email, '%'))";
+            $params[':email'] = $paramsArr['email'];
+        }
+
+        return ['where' => $where, 'params' => $params];
+    }
+
+    private function __getSummaryInterviewer($paramsArr)
+    {
+        $where = '1=1';
+        $whereSql = self::__buildSummaryInterviewerWhereSql($where,$paramsArr);
+
+        return (new Query())
             ->select([
                 'interviewer_info.phone',
                 'interviewer_info.name',
@@ -47,8 +120,7 @@ class InterviewerInfoController extends \yii\rest\Controller
                 'interviewer_info.remark'
             ])
             ->from('interviewer_info')
-            ->all();
-        return $query;
+            ->where($whereSql['where'], $whereSql['params']);
     }
 
 }
