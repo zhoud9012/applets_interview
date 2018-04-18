@@ -9,11 +9,14 @@ use yii\filters\RateLimiter;
 use yii\db\Query;
 use common\support\OSS;
 use common\support\StringHelper;
+use common\error\ErrorInfo;
 use yii\data\ActiveDataProvider;
+use yii\base\Event;
 use yii;
 
-class CandidatesInfoController extends \yii\rest\Controller
+class CandidatesInfoController extends BaseController
 {
+    public $response;
     public function behaviors() {
         $behaviors = parent::behaviors();
 
@@ -40,6 +43,24 @@ class CandidatesInfoController extends \yii\rest\Controller
         return $behaviors;
     }
 
+    public function init() {
+        parent::init();
+        $this->response = Yii::$app->response;
+        //绑定事件
+        Event::on(Response::className(), Response::EVENT_BEFORE_SEND, [$this, 'formatDataBeforeSend']);
+    }
+
+    /**
+     * 使用 controller 中的 afterAction 方法，在响应完 action 之后，对数据格式化
+     * @param yii\base\Action $action
+     * @param mixed $result
+     * @return array
+     */
+    public function afterAction($action, $result)
+    {
+        $rs = parent::afterAction($action, $result);
+        return ['data' => $rs, 'error' => '0','status'=>$this->response->statusCode];
+    }
 
     public  function actions()
     {
@@ -58,11 +79,13 @@ class CandidatesInfoController extends \yii\rest\Controller
         $paramsArr = $request->get();
 
         $query = $this->__getSummaryInterviewer($paramsArr);
+        $this->response->statusCode = 500;//自定义HTTP返回码
+        ErrorInfo::setAndReturn('0010101' );
 
         return new ActiveDataProvider(
             [
                 'query'=>$query,
-                'pagination'=>['pageSize'=>1],//分页大小设置
+                'pagination'=>['pageSize'=>$paramsArr['pageSize']],//分页大小设置
             ]
         );
     }
@@ -134,8 +157,9 @@ class CandidatesInfoController extends \yii\rest\Controller
             ->leftJoin('company_info','company_info.company_id = candidates_info.company_id')
             ->leftJoin('interviewer_info','interviewer_info.interviewer_id = candidates_info.interviewer_id')
             ->leftJoin('office_info','candidates_info.office_id = office_info.office_id')
-            ->where($whereSql['where'], $whereSql['params'])
-            ->all();
+            ->where($whereSql['where'], $whereSql['params']);
+            //->all();
+
     }
 
     /**
@@ -147,7 +171,13 @@ class CandidatesInfoController extends \yii\rest\Controller
      */
     public function actionDynamic()
     {
-        return $this->__getDynamicInterviewer();
+        $query = $this->__getDynamicInterviewer();
+        return new ActiveDataProvider(
+            [
+                'query'=>$query,
+                'pagination'=>['pageSize'=>1],//分页大小设置
+            ]
+        );
     }
 
     private function __getDynamicInterviewer()
@@ -177,8 +207,8 @@ class CandidatesInfoController extends \yii\rest\Controller
                 ['>','candidates_info.interview_time',date('Y-m-d',strtotime('+1 day'))],
                 ['<','candidates_info.interview_time',date('Y-m-d',strtotime('+2 day'))],
                 ['or','candidates_info.interview_result = 1','candidates_info.interview_result = 4']
-            ])
-            ->all();
+            ]);
+            //->all();
     }
 
 
@@ -187,6 +217,10 @@ class CandidatesInfoController extends \yii\rest\Controller
 
     }
 
+    /**
+     *
+     * @return string
+     */
     public function actionExportCsv()
     {
         $request = \Yii::$app->request;
@@ -196,6 +230,7 @@ class CandidatesInfoController extends \yii\rest\Controller
     }
 
     /**
+     * 导出csv
      * @param $paramsArr
      * @return string
      */
@@ -205,7 +240,7 @@ class CandidatesInfoController extends \yii\rest\Controller
             set_time_limit(0);
 
             //数据源
-           $data = $this->__getSummaryInterviewer($paramsArr);
+            $data = $this->__getSummaryInterviewer($paramsArr)->all();
 
             //列标题
             $columnTitles = ['序号','备注','bca'];
@@ -215,7 +250,7 @@ class CandidatesInfoController extends \yii\rest\Controller
             \yii\helpers\FileHelper::createDirectory($exportDir);
 
             //创建文件
-            $fileName = sprintf("interview-data_%s.csv",'a');
+            $fileName = sprintf("interview-data_%s.csv",time());//TODO time()换成取token比较好用于唯一标识
             $allFilePath = $exportDir . $fileName;
 
             $fp = fopen($allFilePath, 'w');
