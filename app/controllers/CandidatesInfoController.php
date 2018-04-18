@@ -2,14 +2,14 @@
 
 namespace app\controllers;
 
+use common\support\OSS;
+use common\support\StringHelper;
+use common\error\ErrorInfo;
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\filters\RateLimiter;
 use yii\db\Query;
-use common\support\OSS;
-use common\support\StringHelper;
-use common\error\ErrorInfo;
 use yii\data\ActiveDataProvider;
 use yii\base\Event;
 use yii;
@@ -172,11 +172,14 @@ class CandidatesInfoController extends BaseController
      */
     public function actionDynamic()
     {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+
         $query = $this->__getDynamicCandidatesInfo();
         return new ActiveDataProvider(
             [
                 'query'=>$query,
-                'pagination'=>['pageSize'=>1],//分页大小设置
+                'pagination'=>['pageSize'=>$paramsArr['pageSize']],//分页大小设置
             ]
         );
     }
