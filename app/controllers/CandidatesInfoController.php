@@ -63,6 +63,9 @@ class CandidatesInfoController extends BaseController
         return ['data' => $rs, 'error' => '0','status'=>$this->response->statusCode];
     }
 
+    /**
+     * @return array
+     */
     public  function actions()
     {
         $actions = parent::actions();
@@ -135,6 +138,10 @@ class CandidatesInfoController extends BaseController
         return ['where' => $where, 'params' => $params];
     }
 
+    /**
+     * @param $paramsArr
+     * @return $this
+     */
     private function __getSummaryCandidatesInfo($paramsArr)
     {
         $where = '1=1';
@@ -187,6 +194,9 @@ class CandidatesInfoController extends BaseController
         );
     }
 
+    /**
+     * @return $this
+     */
     private function __getDynamicCandidatesInfo()
     {
         return (new Query())
@@ -218,14 +228,8 @@ class CandidatesInfoController extends BaseController
             //->all();
     }
 
-
-    public function actionExportExl()
-    {
-
-    }
-
     /**
-     *
+     * 应试者信息汇总导出csv
      * @return string
      */
     public function actionExportSummaryCandidatesInfoCsv()
@@ -237,7 +241,6 @@ class CandidatesInfoController extends BaseController
     }
 
     /**
-     * 导出csv
      * @param $paramsArr
      * @return string
      */
@@ -283,7 +286,7 @@ class CandidatesInfoController extends BaseController
                         $val['interview_time'], //预约时间
                         $val['company_name'], //公司
                         $val['sign_in_time'], //签到时间
-                        $val['interview_result'], //面试结果
+                        self::__interviewResultConvertString($val['interview_result']),//面试结果
                         $val['interview_appraise'], //面试评价
                         $val['written_test_appraise'], //笔试评价
                     ];
@@ -308,15 +311,107 @@ class CandidatesInfoController extends BaseController
         }
     }
 
+    /**
+     * @param $num
+     * @return mixed
+     */
+    private function __interviewResultConvertString($num){
 
-    public function actionExportDynamic()
-    {
-
+        $stateArr = ['数组索引0','暂无','通过','淘汰','爽约'];
+        return $stateArr[$num];
     }
 
-    public function actionImportCandidates()
+    /**
+     * 动态应试者信息导出csv
+     * 应试者信息导出csv
+     * @return string
+     */
+    public function actionExportDynamicCandidatesInfoCsv()
     {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
 
+        return $this->__exportDynamicCandidatesInfo($paramsArr);
     }
+
+    /**
+     * @param $paramsArr
+     * @return string
+     */
+    private function __exportDynamicCandidatesInfo($paramsArr)
+    {
+        try {
+            set_time_limit(0);
+
+            //数据源
+            $data = $this->__getDynamicCandidatesInfo()->all();
+
+            //列标题
+            $columnTitles = ['序号','应试者','手机号','职位','面试官','预约时间','公司','状态','签到时间'];
+
+            //创建目录
+            $exportDir = \Yii::getAlias("@runtime/web/xls/");
+            \yii\helpers\FileHelper::createDirectory($exportDir);
+
+            //创建文件
+            $fileName = sprintf("interview-data_%s.csv",$paramsArr['access-token']);
+            $allFilePath = $exportDir . $fileName;
+
+            $fp = fopen($allFilePath, 'w');
+
+            //boom头
+            fwrite($fp, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            //写入标题
+            fputcsv($fp, $columnTitles);
+
+            if (!empty($data)) {
+                $i = 1;
+                foreach ($data as $key => $val) {
+
+                    //装拼正文内容
+                    $contactArr = [
+                        $i,//序号
+                        $val['candidates_name'], //应试者
+                        $val['phone'], //手机号
+                        $val['office_name'], //职位
+                        $val['interviewer_name'], //面试官
+                        $val['interview_time'], //预约时间
+                        $val['company_name'], //公司
+                        self::__interviewStateConvertString($val['interview_state']), //状态
+                        $val['sign_in_time'], //签到时间
+
+                    ];
+
+                    //写入正文
+                    fputcsv($fp, $contactArr);
+
+                    $i++;
+                }
+            }
+
+            $key = $fileName;
+            OSS::upload($key, $allFilePath);
+            @unlink($allFilePath);
+            $ossUrl = OSS::getUrl($key);
+
+            return $ossUrl . '?t=' . StringHelper::uuid();
+
+        } catch (\Exception $e) {
+            Yii::error((string)$e);
+            return '导出异常';
+        }
+    }
+
+    /**
+     * @param $num
+     * @return mixed
+     */
+    private function __interviewStateConvertString($num){
+
+        $stateArr = ['数组索引0','未签到','答题中','等待审题','审题中','面试中','面试结束','未签到'];
+        return $stateArr[$num];
+    }
+
 
 }
