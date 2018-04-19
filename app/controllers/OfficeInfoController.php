@@ -9,8 +9,11 @@ use yii\filters\RateLimiter;
 use yii\db\Query;
 use common\support\StringHelper;
 use app\models\OfficeInfo;
+use yii\data\ActiveDataProvider;
+use yii\base\Event;
+use yii;
 
-class OfficeInfoController extends \yii\rest\Controller
+class OfficeInfoController extends BaseController
 {
     public function behaviors() {
         $behaviors = parent::behaviors();
@@ -38,14 +41,63 @@ class OfficeInfoController extends \yii\rest\Controller
         return $behaviors;
     }
 
+    public function init() {
+        parent::init();
+        $this->response = Yii::$app->response;
+        //绑定事件
+        Event::on(Response::className(), Response::EVENT_BEFORE_SEND, [$this, 'formatDataBeforeSend']);
+    }
+
+    /**
+     * 使用 controller 中的 afterAction 方法，在响应完 action 之后，对数据格式化
+     * @param yii\base\Action $action
+     * @param mixed $result
+     * @return array
+     */
+    public function afterAction($action, $result)
+    {
+        $rs = parent::afterAction($action, $result);
+        return ['data' => $rs, 'error' => '0','status'=>$this->response->statusCode];
+    }
+
+    /**
+     * @return array
+     */
+    public  function actions()
+    {
+        $actions = parent::actions();
+        unset($actions['index']);
+        return $actions;
+    }
+
+    /**
+     * 应试者信息过滤查询
+     * @return array
+     */
     public function actionIndex()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+
+        $query = $this->__getOfficeInfo();
+        $pageSize = empty($paramsArr['pageSize'])?20:$paramsArr['pageSize'];
+
+        return new ActiveDataProvider(
+            [
+                'query'=>$query,
+                'pagination'=>['pageSize'=>$pageSize],//分页大小设置
+            ]
+        );
+    }
+
+    private function __getOfficeInfo()
     {
         $query = (new Query())
             ->select([
+                'office_info.office_id',
                 'office_info.office_name'
             ])
-            ->from('office_info')
-            ->all();
+            ->from('office_info');
         return $query;
     }
 
