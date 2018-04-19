@@ -5,6 +5,8 @@ namespace app\controllers;
 use common\support\OSS;
 use common\support\StringHelper;
 use common\error\ErrorInfo;
+use common\support\ExcelManage;
+use app\models\CandidatesInfo;
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
@@ -230,12 +232,63 @@ class CandidatesInfoController extends BaseController
 
     public function actionImportSummaryCandidatesInfo()
     {
-        $this->response->statusCode = 500;//自定义HTTP返回码
-        ErrorInfo::setAndReturn('0050102' );
-
         $filePath = $_FILES['file']['tmp_name'];
-        return $filePath;
+        $data = $this->__importDataByFilePath($filePath);
+
+        //TODO 数据处理反向关联到id
+
+        return $this->__saveSummaryCandidatesInfo($data);//数据循环插入
+
     }
+
+    private function __saveSummaryCandidatesInfo($data)
+    {
+        $success = [];
+        foreach($data as $value)
+        {
+            $candidatesInfoModel = new CandidatesInfo();
+            $candidatesInfoModel->candidates_id = StringHelper::uuid();
+            $candidatesInfoModel->phone = $value[1];
+            $candidatesInfoModel->name = $value[2];
+            $candidatesInfoModel->email = $value[3];
+            $candidatesInfoModel->office_id = $value[4];
+            $candidatesInfoModel->interviewer_id = $value[5];
+            $candidatesInfoModel->interview_time = $this->__excelConvertTime($value[6]);
+            $candidatesInfoModel->company_id = $value[7];
+            $candidatesInfoModel->save();
+            $success[] = $candidatesInfoModel->interview_time;
+        }
+
+        return $success;
+    }
+
+    private function __excelConvertTime($time)
+    {
+        // 开票日期转换
+        if (is_numeric($time) && strlen(explode('.',$time)[0]) <= 5) {
+            return date('Y-m-d H:i:s', \PHPExcel_Shared_Date::ExcelToPHP($time)-3600*8);//exl 时间与php 时间相差8小时
+        }else {
+            $this->response->statusCode = 500;//自定义HTTP返回码
+            ErrorInfo::setAndReturn('0050203' );
+        }
+    }
+
+    private function __importDataByFilePath($filePath)
+    {
+        ob_end_clean();
+        try {
+            $data = ExcelManage::importDataByFilePath($filePath, 2);
+        }catch (\PHPExcel_Exception $exception) {
+            $this->response->statusCode = 500;//自定义HTTP返回码
+            ErrorInfo::setAndReturn('0050201');
+        }
+        if (!is_array($data)) {
+            $this->response->statusCode = 501;//自定义HTTP返回码
+            ErrorInfo::setAndReturn('0050202');
+        }
+        return $data;
+    }
+
 
     /**
      * 应试者信息汇总导出csv
