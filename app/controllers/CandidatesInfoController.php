@@ -475,21 +475,25 @@ class CandidatesInfoController extends BaseController
         return $stateArr[$num];
     }
 
-
-    public function actionOne()
+    /**
+     * @return mixed
+     */
+    public function actionUpdate()
     {
         $request = \Yii::$app->request;
         $paramsArr = $request->post();
 
         $candidatesInfo = CandidatesInfo::find()->where(['candidates_id'=>$paramsArr['candidates_id']])->one();
+        $candidatesInfo->setScenario('update');
         $candidatesInfo->name = $paramsArr['name'];
         $candidatesInfo->phone = $paramsArr['phone'];
         $candidatesInfo->office_id = $paramsArr['office_id'];
         $candidatesInfo->interviewer_id = $paramsArr['interviewer_id'];
         $candidatesInfo->interview_time = $paramsArr['interview_time'];
         $candidatesInfo->company_id = $paramsArr['company_id'];
+        $candidatesInfo->save();
 
-        return $candidatesInfo;
+        return $candidatesInfo->primaryKey;
     }
 
 

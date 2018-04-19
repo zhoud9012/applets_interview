@@ -68,14 +68,14 @@ return [
                 ],
                 ['class'=>'yii\rest\UrlRule',
                     'controller'=>'candidates-info',
-                    'except'=>['delete','create','update','view'],//禁用的http动词
+                    'except'=>['delete','create','view'],//禁用的http动词
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
                         'GET dynamic' => 'dynamic', //http 动词 参数    动作名
                         'GET export-summary-candidates-info-csv' => 'export-summary-candidates-info-csv', //http 动词 参数    动作名
                         'GET export-dynamic-candidates-info-csv' => 'export-dynamic-candidates-info-csv', //http 动词 参数    动作名
                         'POST import-summary-candidates-info' => 'import-summary-candidates-info', //http 动词 参数    动作名
-                        'PUT one' => 'one', //http 动词 参数    动作名
+                        'PUT update' => 'update', //http 动词 参数    动作名
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
