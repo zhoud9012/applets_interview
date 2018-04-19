@@ -228,12 +228,12 @@ class CandidatesInfoController extends BaseController
      *
      * @return string
      */
-    public function actionExportCsv()
+    public function actionExportSummaryCandidatesInfoCsv()
     {
         $request = \Yii::$app->request;
         $paramsArr = $request->get();
 
-        return $this->__exportCsv($paramsArr);
+        return $this->__exportSummaryCandidatesInfo($paramsArr);
     }
 
     /**
@@ -241,7 +241,7 @@ class CandidatesInfoController extends BaseController
      * @param $paramsArr
      * @return string
      */
-    private function __exportCsv($paramsArr)
+    private function __exportSummaryCandidatesInfo($paramsArr)
     {
         try {
             set_time_limit(0);
@@ -250,14 +250,14 @@ class CandidatesInfoController extends BaseController
             $data = $this->__getSummaryCandidatesInfo($paramsArr)->all();
 
             //列标题
-            $columnTitles = ['序号','备注','bca'];
+            $columnTitles = ['序号','手机号','应试者','邮箱','职位','面试官','预约时间','公司','签到时间','面试结果','面试评价','笔试评价'];
 
             //创建目录
             $exportDir = \Yii::getAlias("@runtime/web/xls/");
             \yii\helpers\FileHelper::createDirectory($exportDir);
 
             //创建文件
-            $fileName = sprintf("interview-data_%s.csv",time());//TODO time()换成取token比较好用于唯一标识
+            $fileName = sprintf("interview-data_%s.csv",$paramsArr['access-token']);
             $allFilePath = $exportDir . $fileName;
 
             $fp = fopen($allFilePath, 'w');
@@ -275,8 +275,17 @@ class CandidatesInfoController extends BaseController
                     //装拼正文内容
                     $contactArr = [
                         $i,//序号
-                        $val['phone'], //签约金额
-                        $val['candidates_name'], //租用金额
+                        $val['phone'], //手机号
+                        $val['candidates_name'], //应试者
+                        $val['email'], //邮箱
+                        $val['office_name'], //职位
+                        $val['interviewer_name'], //面试官
+                        $val['interview_time'], //预约时间
+                        $val['company_name'], //公司
+                        $val['sign_in_time'], //签到时间
+                        $val['interview_result'], //面试结果
+                        $val['interview_appraise'], //面试评价
+                        $val['written_test_appraise'], //笔试评价
                     ];
 
                     //写入正文
