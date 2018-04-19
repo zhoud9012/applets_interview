@@ -12,6 +12,7 @@ class ErrorMsg
      * @var array
      */
     public static $errMsg = [
+
         /*业务错误*/
         ErrorCode::ERR_CANDIDATES_INFO => '应试者信息过滤查询信息为空',
 
@@ -22,6 +23,10 @@ class ErrorMsg
         ErrorCode::ERR_SYSTEM_UPLOAD_INFO_C => '文件只有部分被上传',
         ErrorCode::ERR_SYSTEM_UPLOAD_INFO_D => '没有文件被上传',
         ErrorCode::ERR_SYSTEM_UPLOAD_INFO_DEF => '请查看上传错误码',
+        ErrorCode::ERR_SYSTEM_EXCEL_IMPORT_DEF => 'php excel 插件异常',
+        ErrorCode::ERR_SYSTEM_EXCEL_IMPORT_A => 'php excel 返回结果非数组',
+        ErrorCode::ERR_SYSTEM_EXCEL_IMPORT_B => 'php excel 日期格式不对',
+
     ];
 
     /**
