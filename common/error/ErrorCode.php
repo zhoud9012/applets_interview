@@ -18,5 +18,10 @@ class ErrorCode
      */
 
     const ERR_CANDIDATES_INFO = '0010101';   //应试者信息过滤查询
+    const ERR_SYSTEM_UPLOAD_INFO_A = '0050101';   //上传文件大小超过php.ini中upload_max_filesize 选项限制的值
+    const ERR_SYSTEM_UPLOAD_INFO_B = '0050102';   //上传文件大小超过 HTML 表单中 MAX_FILE_SIZE 选项指定的值
+    const ERR_SYSTEM_UPLOAD_INFO_C = '0050103';   //文件只有部分被上传
+    const ERR_SYSTEM_UPLOAD_INFO_D = '0050104';   //没有文件被上传
+    const ERR_SYSTEM_UPLOAD_INFO_DEF = '0050105';   //请查看上传错误码
 
 }

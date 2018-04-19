@@ -11,9 +11,17 @@ class ErrorMsg
      * 定义错误描述信息
      * @var array
      */
-    const ERR_CANDIDATES_INFO = '0010101';   //应试者信息过滤查询
     public static $errMsg = [
+        /*业务错误*/
         ErrorCode::ERR_CANDIDATES_INFO => '应试者信息过滤查询信息为空',
+
+        /*系统错误*/
+        //上传错误
+        ErrorCode::ERR_SYSTEM_UPLOAD_INFO_A => '上传文件大小超过php.ini中upload_max_filesize 选项限制的值',
+        ErrorCode::ERR_SYSTEM_UPLOAD_INFO_B => '上传文件大小超过 HTML 表单中 MAX_FILE_SIZE 选项指定的值',
+        ErrorCode::ERR_SYSTEM_UPLOAD_INFO_C => '文件只有部分被上传',
+        ErrorCode::ERR_SYSTEM_UPLOAD_INFO_D => '没有文件被上传',
+        ErrorCode::ERR_SYSTEM_UPLOAD_INFO_DEF => '请查看上传错误码',
     ];
 
     /**
