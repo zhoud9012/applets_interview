@@ -103,9 +103,11 @@ class OfficeInfoController extends BaseController
 
     public function actionCreate()
     {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->post();
         $officeInfo = new OfficeInfo;
         $officeInfo->office_id = StringHelper::uuid();
-        $officeInfo->office_name = $_POST['office_name'];
+        $officeInfo->office_name = $paramsArr['office_name'];
         $officeInfo->save();
         return $officeInfo->primaryKey;
     }
