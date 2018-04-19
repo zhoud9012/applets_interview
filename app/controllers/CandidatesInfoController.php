@@ -85,8 +85,6 @@ class CandidatesInfoController extends BaseController
         $paramsArr = $request->get();
 
         $query = $this->__getSummaryCandidatesInfo($paramsArr);
-        //$this->response->statusCode = 500;//自定义HTTP返回码
-        ErrorInfo::setAndReturn('0010101' );
         $pageSize = empty($paramsArr['pageSize'])?20:$paramsArr['pageSize'];
 
         return new ActiveDataProvider(
@@ -150,6 +148,7 @@ class CandidatesInfoController extends BaseController
         $whereSql = self::__buildGetCandidatesInfoWhereSql($where,$paramsArr);
         return (new Query())
             ->select([
+                'candidates_info.candidates_id',
                 'candidates_info.phone',
                 'candidates_info.name as candidates_name',
                 'candidates_info.email',
@@ -203,6 +202,7 @@ class CandidatesInfoController extends BaseController
     {
         return (new Query())
             ->select([
+                'candidates_info.candidates_id',
                 'candidates_info.phone',
                 'candidates_info.name as candidates_name',
                 'candidates_info.email',
@@ -235,7 +235,7 @@ class CandidatesInfoController extends BaseController
         $filePath = $_FILES['file']['tmp_name'];
         $data = $this->__importDataByFilePath($filePath);
 
-        //TODO 数据处理反向关联到id
+        //TODO 数据处理反向关联到id 考虑是否同名问题
 
         return $this->__saveSummaryCandidatesInfo($data);//数据循环插入
 
@@ -473,6 +473,23 @@ class CandidatesInfoController extends BaseController
 
         $stateArr = ['数组索引0','未签到','答题中','等待审题','审题中','面试中','面试结束','未签到'];
         return $stateArr[$num];
+    }
+
+
+    public function actionOne()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->post();
+
+        $candidatesInfo = CandidatesInfo::find()->where(['candidates_id'=>$paramsArr['candidates_id']])->one();
+        $candidatesInfo->name = $paramsArr['name'];
+        $candidatesInfo->phone = $paramsArr['phone'];
+        $candidatesInfo->office_id = $paramsArr['office_id'];
+        $candidatesInfo->interviewer_id = $paramsArr['interviewer_id'];
+        $candidatesInfo->interview_time = $paramsArr['interview_time'];
+        $candidatesInfo->company_id = $paramsArr['company_id'];
+
+        return $candidatesInfo;
     }
 
 
