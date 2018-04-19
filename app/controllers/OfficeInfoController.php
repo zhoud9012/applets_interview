@@ -15,6 +15,8 @@ use yii;
 
 class OfficeInfoController extends BaseController
 {
+    public $response;
+
     public function behaviors() {
         $behaviors = parent::behaviors();
 
