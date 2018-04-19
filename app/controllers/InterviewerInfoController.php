@@ -3,6 +3,8 @@
 namespace app\controllers;
 
 use common\error\ErrorInfo;
+use common\support\StringHelper;
+use app\models\InterviewerInfo;
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
@@ -121,6 +123,33 @@ class InterviewerInfoController extends BaseController
             ])
             ->from('interviewer_info')
             ->where($whereSql['where'], $whereSql['params']);
+    }
+
+    public function actionCreate()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->post();
+        $interviewerInfo = new InterviewerInfo;
+        $interviewerInfo->interviewer_id = StringHelper::uuid();
+        $interviewerInfo->phone = $paramsArr['phone'];
+        $interviewerInfo->name = $paramsArr['name'];
+        $interviewerInfo->email = $paramsArr['email'];
+        $interviewerInfo->remark = $paramsArr['remark'];
+        $interviewerInfo->save();
+        return $interviewerInfo->primaryKey;
+    }
+
+    public function actionUpdate()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->post();
+        $interviewerInfo = InterviewerInfo::findOne($paramsArr['interviewer_id']);
+        $interviewerInfo->phone = $paramsArr['phone'];
+        $interviewerInfo->name = $paramsArr['name'];
+        $interviewerInfo->email = $paramsArr['email'];
+        $interviewerInfo->remark = $paramsArr['remark'];
+        $interviewerInfo->save();
+        return $interviewerInfo->primaryKey;
     }
 
 }

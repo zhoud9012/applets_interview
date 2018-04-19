@@ -41,7 +41,6 @@ class InterviewerInfo extends \yii\db\ActiveRecord
             [['name'], 'string', 'max' => 48],
             [['email'], 'string', 'max' => 255],
             [['remark'], 'string', 'max' => 500],
-            [['is_del'], 'string', 'max' => 4],
             [['interviewer_id'], 'unique'],
         ];
     }
