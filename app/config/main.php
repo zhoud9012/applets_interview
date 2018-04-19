@@ -80,15 +80,20 @@ return [
                 ],
                 ['class'=>'yii\rest\UrlRule',
                     'controller'=>'interviewer-info',
-                    'except'=>['delete','create','update','view'],//禁用的http动词
+                    'except'=>['delete','view'],//禁用的http动词
                     'pluralize'=>false,
+                    'extraPatterns'=>[// 为方法配置restful 请求
+                        'POST create' => 'create', //http 动词 参数    动作名
+                        'PUT update' => 'update' //http 动词 参数    动作名
+                    ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
                     'controller'=>'office-info',
                     'except'=>['delete'],//禁用的http动词
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
-                        'POST create' => 'create' //http 动词 参数    动作名
+                        'POST create' => 'create', //http 动词 参数    动作名
+                        'PUT update' => 'update' //http 动词 参数    动作名
                     ],
                 ],
             ],
