@@ -35,7 +35,6 @@ class OfficeInfo extends \yii\db\ActiveRecord
             [['created_on', 'modified_on'], 'safe'],
             [['office_id', 'created_by', 'modified_by'], 'string', 'max' => 36],
             [['office_name'], 'string', 'max' => 48],
-            [['is_del'], 'string', 'max' => 4],
             [['office_id'], 'unique'],
         ];
     }

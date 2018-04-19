@@ -2,13 +2,13 @@
 
 namespace app\controllers;
 
+use common\support\StringHelper;
+use app\models\OfficeInfo;
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\filters\RateLimiter;
 use yii\db\Query;
-use common\support\StringHelper;
-use app\models\OfficeInfo;
 use yii\data\ActiveDataProvider;
 use yii\base\Event;
 use yii;
@@ -107,6 +107,16 @@ class OfficeInfoController extends BaseController
         $paramsArr = $request->post();
         $officeInfo = new OfficeInfo;
         $officeInfo->office_id = StringHelper::uuid();
+        $officeInfo->office_name = $paramsArr['office_name'];
+        $officeInfo->save();
+        return $officeInfo->primaryKey;
+    }
+
+    public function actionUpdate()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->post();
+        $officeInfo = OfficeInfo::findOne($paramsArr['office_id']);
         $officeInfo->office_name = $paramsArr['office_name'];
         $officeInfo->save();
         return $officeInfo->primaryKey;
