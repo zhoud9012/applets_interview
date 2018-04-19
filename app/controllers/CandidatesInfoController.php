@@ -228,6 +228,15 @@ class CandidatesInfoController extends BaseController
             //->all();
     }
 
+    public function actionImportSummaryCandidatesInfo()
+    {
+        $this->response->statusCode = 500;//自定义HTTP返回码
+        ErrorInfo::setAndReturn('0050102' );
+
+        $filePath = $_FILES['file']['tmp_name'];
+        return $filePath;
+    }
+
     /**
      * 应试者信息汇总导出csv
      * @return string
