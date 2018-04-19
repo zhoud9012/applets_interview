@@ -36,13 +36,21 @@ class CandidatesInfo extends \yii\db\ActiveRecord
         return 'candidates_info';
     }
 
+    public function scenarios()
+    {
+        return [
+            'create' => ['phone', 'name', 'office_id', 'interviewer_id', 'company_id'],
+            'update' => ['phone', 'name', 'office_id', 'interviewer_id', 'company_id'],
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['candidates_id', 'phone', 'name', 'office_id', 'interviewer_id', 'company_id'], 'required'],
+            [['candidates_id'], 'required','on' => ['create', 'update']],
             [['interview_time', 'sign_in_time', 'created_on', 'modified_on'], 'safe'],
             [['candidates_id', 'company_id', 'created_by', 'modified_by'], 'string', 'max' => 36],
             [['phone'], 'string', 'max' => 13],
