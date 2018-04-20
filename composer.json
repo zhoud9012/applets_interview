@@ -24,7 +24,8 @@
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "phpoffice/phpexcel": "^1.8",
-        "chonder/yii2-aliyun-oss": "dev-master"
+        "chonder/yii2-aliyun-oss": "dev-master",
+        "jtcczu/yii2-applet": "^1.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
