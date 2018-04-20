@@ -36,7 +36,6 @@ class QuestionType extends \yii\db\ActiveRecord
             [['created_on', 'modified_on'], 'safe'],
             [['question_type_id', 'office_id', 'created_by', 'modified_by'], 'string', 'max' => 36],
             [['question_name'], 'string', 'max' => 48],
-            [['is_del'], 'string', 'max' => 4],
             [['question_type_id'], 'unique'],
         ];
     }
