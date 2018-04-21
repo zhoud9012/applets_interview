@@ -15,16 +15,12 @@ return [
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],
+        //认证不需要cookie && session
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'common\models\User',//指定认证的model类
             'enableAutoLogin' => true,
             'enableSession' => false,//用户认证状态就不通过session来保持,因为RESTful APIs为无状态的
             'loginUrl' => null,//属性为null（显示一个HTTP 403 错误而不是跳转到登录界面）
-            'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
-        ],
-        'session' => [
-            // this is the name of the session cookie used for login on the frontend
-            'name' => 'advanced-app',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -38,15 +34,6 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
-        ],
-        */
-
         //http://app.interview-wechat.com/index.php/gii  改了后要用这种路径搞定
         'urlManager' => [
             'enablePrettyUrl' => true,
