@@ -14,6 +14,7 @@ use yii\data\ActiveDataProvider;
 use yii\base\Event;
 use yii;
 
+
 class LoginController extends BaseController
 {
     public $response;
@@ -84,7 +85,9 @@ class LoginController extends BaseController
         //todo 后续进入小程序先从storage 读取3rd_session 发送给后端
         //todo 在redis 中查找合法openid
 
-
+        \Yii::$app->cache->redis->hset('token:mykey2', 'somefield1', 'somevalue2');
+        $expire = \Yii::$app->cache->redis->expire('token:mykey2', 10);
+        $token = \Yii::$app->cache->redis->hget('token:mykey2', 'somefield1');
 
         //$command = 'head /dev/urandom | tr -dc A-Za-z0-9 | head -c 168';//生成168 真随机
         //echo exec($command,$array);
@@ -96,6 +99,7 @@ class LoginController extends BaseController
             'getUser'=>$getUser,
             'checkSignature'=>$checkSignature,
             'array'=>StringHelper::uuid(),
+            'token'=>$token,
         ];
 
     }
