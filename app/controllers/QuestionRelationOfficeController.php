@@ -112,24 +112,48 @@ class QuestionRelationOfficeController extends BaseController
     {
         $request = \Yii::$app->request;
         $paramsArr = $request->post();
-        $QuestionRelationOffice = new QuestionRelationOffice;
-        $QuestionRelationOffice->relation_id = StringHelper::uuid();
-        $QuestionRelationOffice->question_id = $paramsArr['question_id'];
-        $QuestionRelationOffice->office_id = $paramsArr['office_id'];
-        $QuestionRelationOffice->save();
+        $list = $paramsArr['list'];
+        $list = \GuzzleHttp\json_decode($list);
 
-        return $QuestionRelationOffice->primaryKey;
+        foreach ($list as $item) {
+
+            $questionRelationOffice = new QuestionRelationOffice;
+            $questionRelationOffice->relation_id = StringHelper::uuid();
+            $questionRelationOffice->question_id = $item->question_id;
+            $questionRelationOffice->office_id = $item->office_id;
+
+            $questionRelationOffice->save();
+            $result[]= $questionRelationOffice->primaryKey;
+        }
+
+
+        return $result;
     }
 
     public function actionUpdate()
     {
         $request = \Yii::$app->request;
         $paramsArr = $request->post();
-        $QuestionRelationOffice = QuestionRelationOffice::findOne($paramsArr['relation_id']);
-        $QuestionRelationOffice->question_id = $paramsArr['question_id'];
-        $QuestionRelationOffice->office_id = $paramsArr['office_id'];
-        $QuestionRelationOffice->save();
 
-        return $QuestionRelationOffice->primaryKey;
+        $list = $paramsArr['list'];
+        $officeId = $paramsArr['office_id'];
+        $list = \GuzzleHttp\json_decode($list);
+
+        
+        QuestionRelationOffice::deleteAll('office_id = :office_id ', [':office_id' => $officeId]);
+
+        foreach ($list as $item) {
+
+            $questionRelationOffice = new QuestionRelationOffice;
+            $questionRelationOffice->relation_id = StringHelper::uuid();
+            $questionRelationOffice->question_id = $item->question_id;
+            $questionRelationOffice->office_id = $officeId;
+
+            $questionRelationOffice->save();
+            $result[]= $questionRelationOffice->primaryKey;
+        }
+
+        return $result;
+
     }
 }
