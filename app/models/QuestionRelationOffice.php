@@ -35,7 +35,6 @@ class QuestionRelationOffice extends \yii\db\ActiveRecord
             [['relation_id', 'question_id', 'office_id'], 'required'],
             [['created_on', 'modified_on'], 'safe'],
             [['relation_id', 'question_id', 'office_id', 'created_by', 'modified_by'], 'string', 'max' => 36],
-            [['is_del'], 'string', 'max' => 4],
             [['relation_id'], 'unique'],
         ];
     }
