@@ -97,7 +97,7 @@ return [
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
-                    'controller'=>'question-type',
+                    'controller'=>'question-info',
                     'except'=>['delete'],//禁用的http动词
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
