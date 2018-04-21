@@ -79,13 +79,21 @@ class LoginController extends BaseController
         $session_key = $session->getSessionKey(); //session_key
         $unionid = $session->getUnionid(); //unionid
 
-        //todo 通过code 获取openid token
+        $accessToken = StringHelper::uuid();
+
+        //todo 1.判断是否有token 有就通过token获取openid 没就通过code 调微信接口 获取openid 生成toeken返回
+
+
+
+        //todo 通过code 获取openid toke
         //todo 初次登录 hash表存入redis 3rd_session = /dev/urandom  key = openid value =  session_key
         //todo 前端将3rd_session 写入storage
         //todo 后续进入小程序先从storage 读取3rd_session 发送给后端
         //todo 在redis 中查找合法openid
 
-        \Yii::$app->cache->redis->hset('token:mykey2', 'somefield1', 'somevalue2');
+        //\Yii::$app->cache->redis->hset('token:'.$accessToken, 'somefield1', 'somevalue2');
+        \Yii::$app->cache->redis->hmset('token:'.$accessToken, 'openid', $openid,'session_key',$session_key);
+        $tokenExist =\Yii::$app->cache->redis->exists('token:39e5fb74-48f7-a2a3-8627-457ba2c85b55');
         $expire = \Yii::$app->cache->redis->expire('token:mykey2', 10);
         $token = \Yii::$app->cache->redis->hget('token:mykey2', 'somefield1');
 
@@ -100,6 +108,7 @@ class LoginController extends BaseController
             'checkSignature'=>$checkSignature,
             'array'=>StringHelper::uuid(),
             'token'=>$token,
+            'tokenExist'=>$tokenExist,
         ];
 
     }
