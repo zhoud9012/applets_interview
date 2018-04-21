@@ -13,7 +13,10 @@ return [
     'controllerNamespace' => 'app\controllers',
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-frontend',
+            //'csrfParam' => '_csrf-frontend',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ],
         ],
         //认证不需要cookie && session
         'user' => [
