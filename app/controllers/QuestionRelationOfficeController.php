@@ -133,20 +133,22 @@ class QuestionRelationOfficeController extends BaseController
     public function actionUpdate()
     {
         $request = \Yii::$app->request;
-        $paramsArr = $request->post();
+
+        // 返回所有参数
+        $paramsArr = $request->bodyParams;
+        // 返回参数 "id"
+        //$paramsArr = $request->getBodyParam('id');
 
         $list = $paramsArr['list'];
         $officeId = $paramsArr['office_id'];
-        $list = \GuzzleHttp\json_decode($list);
 
-        
         QuestionRelationOffice::deleteAll('office_id = :office_id ', [':office_id' => $officeId]);
 
         foreach ($list as $item) {
 
             $questionRelationOffice = new QuestionRelationOffice;
             $questionRelationOffice->relation_id = StringHelper::uuid();
-            $questionRelationOffice->question_id = $item->question_id;
+            $questionRelationOffice->question_id = $item['question_id'];
             $questionRelationOffice->office_id = $officeId;
 
             $questionRelationOffice->save();
