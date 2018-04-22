@@ -41,6 +41,7 @@ class CandidatesInfo extends \yii\db\ActiveRecord
         return [
             'create' => ['phone', 'name', 'office_id', 'interviewer_id', 'company_id'],
             'update' => ['phone', 'name', 'office_id', 'interviewer_id', 'company_id'],
+            'review' => ['interview_state', 'interview_result', 'interview_appraise', 'written_test_appraise'],
         ];
     }
 
@@ -56,8 +57,8 @@ class CandidatesInfo extends \yii\db\ActiveRecord
             [['phone'], 'string', 'max' => 13],
             [['name'], 'string', 'max' => 48],
             [['email', 'office_id', 'interviewer_id'], 'string', 'max' => 255],
-            [['interview_state', 'interview_result'], 'string', 'max' => 1],
-            [['interview_appraise', 'written_test_appraise'], 'string', 'max' => 500],
+            [['interview_state', 'interview_result'], 'string', 'max' => 1,'on' => ['review']],
+            [['interview_appraise', 'written_test_appraise'], 'string', 'max' => 500,'on' => ['review']],
             [['is_del'], 'string', 'max' => 4],
             [['candidates_id'], 'unique'],
         ];

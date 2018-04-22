@@ -77,6 +77,8 @@ return [
                     'except'=>['delete','view'],//禁用的http动词
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
+                        'GET candidates-list' => 'candidates-list', //http 动词 参数    动作名
+                        'POST update-candidates' => 'update-candidates', //http 动词 参数    动作名
                         'POST create' => 'create', //http 动词 参数    动作名
                         'OPTIONS create' => 'create', //http 动词 参数    动作名
                         'PUT update' => 'update', //http 动词 参数    动作名

@@ -5,6 +5,7 @@ namespace app\controllers;
 use common\error\ErrorInfo;
 use common\support\StringHelper;
 use app\models\InterviewerInfo;
+use app\models\CandidatesInfo;
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
@@ -152,10 +153,65 @@ class InterviewerInfoController extends BaseController
     }
 
     //todo 获取该面试官应试者数量
+    //todo 获取本人应试记录状态
+    public function actionCandidatesList(){
+
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+        $accessToken = $paramsArr['access-token'];
+        $openid = \Yii::$app->cache->redis->hget('token:'.$accessToken,'openid');
+
+        return $this->__getCandidatesListByOpenid($openid);
+    }
+
+    private function __getCandidatesListByOpenid($openid)
+    {
+        return (new Query())
+            ->select([
+                'candidates_info.candidates_id',
+                'candidates_info.phone',
+                'candidates_info.name',
+                'office_info.office_name AS office_name',
+                'candidates_info.sign_in_time',
+                'candidates_info.interview_state',
+                'candidates_info.interview_result',
+                'candidates_info.interview_appraise',
+                'candidates_info.written_test_appraise'
+            ])
+            ->from('interviewer_info')
+            ->innerJoin('user_applet','user_applet.phone = interviewer_info.phone')
+            ->leftJoin('candidates_info','candidates_info.interviewer_id = interviewer_info.interviewer_id')
+            ->innerJoin('office_info','office_info.office_id = candidates_info.office_id')
+            ->where([
+                'user_applet.openid'=>$openid
+            ])
+            //->createCommand()->getRawSql();
+            ->all();
+    }
+
 
     //todo 候选人到了？是指该面试官多个应试者的状态么？或是具体某个，其他应试者状态是？
 
     //点击列表 选中候选人获取其具体状态
+
+    /**
+     * @return mixed
+     */
+    public function actionUpdateCandidates()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->post();
+
+        $candidatesInfo = CandidatesInfo::find()->where(['candidates_id'=>$paramsArr['candidates_id']])->one();
+        $candidatesInfo->setScenario('review');
+        $candidatesInfo->interview_state = $paramsArr['interview_state'];
+        $candidatesInfo->interview_result = $paramsArr['interview_result'];
+        $candidatesInfo->interview_appraise = $paramsArr['interview_appraise'];
+        $candidatesInfo->written_test_appraise = $paramsArr['written_test_appraise'];
+        $candidatesInfo->save();
+
+        return $candidatesInfo->primaryKey;
+    }
 
     //todo 面试官给应试者写入审题结果&评价
 

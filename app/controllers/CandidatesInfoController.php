@@ -561,7 +561,7 @@ class CandidatesInfoController extends BaseController
             ->innerJoin('candidates_info','user_applet.phone = candidates_info.phone')
             ->innerJoin('office_info','office_info.office_id = candidates_info.office_id')
             ->where([
-                'openid'=>$openid
+                'user_applet.openid'=>$openid
             ])
             //->createCommand()->getRawSql();
             ->all();
