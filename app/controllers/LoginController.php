@@ -62,7 +62,7 @@ class LoginController extends BaseController
     }
 
     /**
-     * 应试者信息过滤查询
+     * 用户登陆
      * @return array
      */
     public function actionIndex()
@@ -70,31 +70,75 @@ class LoginController extends BaseController
         $request = \Yii::$app->request;
         $paramsArr = $request->get();
 
-        $applet = \Yii::$app->applet->makeSession($paramsArr['code']);
-        $getUser = $applet->getUser($paramsArr['encryptedData'], $paramsArr['iv']); //返回用户信息
-        $checkSignature = $applet->checkSignature($paramsArr['rawData'], $paramsArr['signature']); //数据签名校验
+        $this->__makeAccessToken($paramsArr['code'],3600*7*24);
+
+    }
+
+
+    /**
+     * @param $code
+     * @param $time
+     * @return mixed
+     */
+    private function __makeAccessToken($code,$time){
+
+        $applet = \Yii::$app->applet->makeSession($code);
 
         $session = $applet->getSession();
         $openid = $session->getOpenid(); //openid
         $session_key = $session->getSessionKey(); //session_key
-        $unionid = $session->getUnionid(); //unionid
 
-        $accessToken = 'token:'.StringHelper::uuid();
-
-        //todo 1.判断是否有token 有就通过token获取openid 没就通过code 调微信接口 获取openid 生成toeken返回
-        //todo 通过code 获取openid toke
-        //todo 初次登录 hash表存入redis 3rd_session = /dev/urandom  key = openid value =  session_key
-        //todo 前端将3rd_session 写入storage
-        //todo 后续进入小程序先从storage 读取3rd_session 发送给后端
-        //todo 在redis 中查找合法openid
+        $accessToken = $this->__makeThirdSession('token:',1);
 
         \Yii::$app->cache->redis->hmset($accessToken, 'openid', $openid,'session_key',$session_key);
-        \Yii::$app->cache->redis->expire($accessToken, 3600*24*7);//设置7天过期
-        
-        //$command = 'head /dev/urandom | tr -dc A-Za-z0-9 | head -c 168';//生成168 真随机
+        \Yii::$app->cache->redis->expire($accessToken,$time);
 
         return $accessToken;
+    }
+
+    /**
+     * @param $prefix
+     * @param $type
+     * @return mixed
+     */
+    private function __makeThirdSession($prefix,$type){
+
+        $uuid = $prefix.StringHelper::uuid();
+        $command = 'head /dev/urandom | tr -dc A-Za-z0-9 | head -c 168';
+        $random = $prefix.exec($command);
+        $list = ['index0',$uuid,$random];
+
+        return $list[$type];
 
     }
+
+    /**
+     * @param $code
+     * @param $encryptedData
+     * @param $iv
+     * @param $rawData
+     * @param $signature
+     * @return array
+     */
+    private function __getWechatOtherInfo($code,$encryptedData,$iv,$rawData,$signature){
+
+        $applet = \Yii::$app->applet->makeSession($code);
+        $session = $applet->getSession();
+        $openid = $session->getOpenid(); //openid
+        $getUser = $applet->getUser($encryptedData,$iv); //返回用户信息
+        $checkSignature = $applet->checkSignature($rawData,$signature); //数据签名校验
+        $unionid = $session->getUnionid(); //unionid
+
+        return [
+            'session'=>$session,
+            'openid'=>$openid,
+            'getUser'=>$getUser,
+            'checkSignature'=>$checkSignature,
+            'unionid'=>$unionid,
+        ];
+
+    }
+
+
 
 }
