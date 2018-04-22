@@ -11,6 +11,9 @@ use yii\filters\RateLimiter;
 use yii\db\Query;
 use yii\data\ActiveDataProvider;
 use yii\base\Event;
+
+use yii\filters\Cors;
+use yii\helpers\ArrayHelper;
 use yii;
 
 class OfficeInfoController extends BaseController
@@ -18,6 +21,7 @@ class OfficeInfoController extends BaseController
     public $response;
 
     public function behaviors() {
+
         $behaviors = parent::behaviors();
 
         $behaviors['rateLimiter'] = [
@@ -45,6 +49,12 @@ class OfficeInfoController extends BaseController
 
     public function init() {
         parent::init();
+        // 指定允许其他域名访问
+        header('Access-Control-Allow-Origin:*');
+        // 响应类型
+        header('Access-Control-Allow-Methods:POST');
+        // 响应头设置
+        header('Access-Control-Allow-Headers:x-requested-with,content-type');
         $this->response = Yii::$app->response;
         //绑定事件
         Event::on(Response::className(), Response::EVENT_BEFORE_SEND, [$this, 'formatDataBeforeSend']);
@@ -78,6 +88,7 @@ class OfficeInfoController extends BaseController
      */
     public function actionIndex()
     {
+
         $request = \Yii::$app->request;
         $paramsArr = $request->get();
 

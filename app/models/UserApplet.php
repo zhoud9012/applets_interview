@@ -9,6 +9,7 @@ use Yii;
  *
  * @property string $user_id 用户id
  * @property string $phone 手机号
+ * @property string $openid openid
  * @property string $created_by 创建人
  * @property string $created_on 创建时间
  * @property string $modified_by 修改人
@@ -17,6 +18,14 @@ use Yii;
  */
 class UserApplet extends \yii\db\ActiveRecord
 {
+
+    public function scenarios()
+    {
+        return [
+            'create' => ['user_id', 'openid', 'phone'],
+            'update' => ['openid', 'phone'],
+        ];
+    }
     /**
      * @inheritdoc
      */
@@ -31,11 +40,10 @@ class UserApplet extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'phone'], 'required'],
+            [['user_id'], 'required','on' => ['create']],
             [['created_on', 'modified_on'], 'safe'],
-            [['user_id', 'created_by', 'modified_by'], 'string', 'max' => 36],
-            [['phone'], 'string', 'max' => 13],
-            [['is_del'], 'string', 'max' => 4],
+            [['user_id','openid','created_by', 'modified_by'], 'string', 'max' => 36,'on' => ['create','update']],
+            [['phone'], 'string', 'max' => 13,'on' => ['create','update']],
             [['user_id'], 'unique'],
         ];
     }
