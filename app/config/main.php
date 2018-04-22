@@ -64,6 +64,8 @@ return [
                         'GET dynamic' => 'dynamic', //http 动词 参数    动作名
                         'GET export-summary-candidates-info-csv' => 'export-summary-candidates-info-csv', //http 动词 参数    动作名
                         'GET export-dynamic-candidates-info-csv' => 'export-dynamic-candidates-info-csv', //http 动词 参数    动作名
+                        'GET question' => 'question', //http 动词 参数    动作名
+                        'GET candidates-status' => 'candidates-status', //http 动词 参数    动作名
                         'POST import-summary-candidates-info' => 'import-summary-candidates-info', //http 动词 参数    动作名
                         'OPTIONS import-summary-candidates-info' => 'import-summary-candidates-info', //http 动词 参数    动作名
                         'PUT update' => 'update', //http 动词 参数    动作名

@@ -151,4 +151,14 @@ class InterviewerInfoController extends BaseController
         return $interviewerInfo->primaryKey;
     }
 
+    //todo 获取该面试官应试者数量
+
+    //todo 候选人到了？是指该面试官多个应试者的状态么？或是具体某个，其他应试者状态是？
+
+    //点击列表 选中候选人获取其具体状态
+
+    //todo 面试官给应试者写入审题结果&评价
+
+    //todo 面试官给应试者写入面试结果&评价
+
 }

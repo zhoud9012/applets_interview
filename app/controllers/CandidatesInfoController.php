@@ -496,5 +496,75 @@ class CandidatesInfoController extends BaseController
         return $candidatesInfo->primaryKey;
     }
 
+    //todo 应试者依据岗位获取试题类型
+
+    public function actionQuestion(){
+
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+        $accessToken = $paramsArr['access-token'];
+        $openid = \Yii::$app->cache->redis->hget('token:'.$accessToken,'openid');
+
+        return $this->__getQuestionByOpenid($openid);
+    }
+
+    private function __getQuestionByOpenid($openid)
+    {
+        return (new Query())
+            ->select([
+                //'user_applet.openid AS openid',
+                'candidates_info.phone',
+                'office_info.office_id AS office_id',
+                'office_info.office_name AS office_name',
+                'question_relation_office.relation_id AS relation_id',
+                'question_info.question_id AS question_id',
+                'question_info.question_name AS question_name'
+            ])
+            ->from('user_applet')
+            ->innerJoin('candidates_info','user_applet.phone = candidates_info.phone')
+            ->innerJoin('office_info','office_info.office_id = candidates_info.office_id')
+            ->innerJoin('question_relation_office','question_relation_office.office_id = office_info.office_id')
+            ->innerJoin('question_info','question_info.question_id = question_relation_office.question_id')
+            ->where([
+                'openid'=>$openid
+            ])
+            //->createCommand()->getRawSql();
+            ->all();
+    }
+
+    //todo 获取本人应试记录状态
+    public function actionCandidatesStatus(){
+
+        $request = \Yii::$app->request;
+        $paramsArr = $request->get();
+        $accessToken = $paramsArr['access-token'];
+        $openid = \Yii::$app->cache->redis->hget('token:'.$accessToken,'openid');
+
+        return $this->__getCandidatesStatusByOpenid($openid);
+    }
+
+    private function __getCandidatesStatusByOpenid($openid)
+    {
+        return (new Query())
+            ->select([
+                'candidates_info.candidates_id',
+                'candidates_info.phone',
+                'candidates_info.name',
+                'office_info.office_name AS office_name',
+                'candidates_info.sign_in_time',
+                'candidates_info.interview_state',
+                'candidates_info.interview_result',
+                'candidates_info.interview_appraise',
+                'candidates_info.written_test_appraise'
+            ])
+            ->from('user_applet')
+            ->innerJoin('candidates_info','user_applet.phone = candidates_info.phone')
+            ->innerJoin('office_info','office_info.office_id = candidates_info.office_id')
+            ->where([
+                'openid'=>$openid
+            ])
+            //->createCommand()->getRawSql();
+            ->all();
+    }
 
 }

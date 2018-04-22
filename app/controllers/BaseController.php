@@ -18,8 +18,8 @@ Abstract class BaseController extends \yii\rest\Controller
                 'class' => Cors::className(),
                 'cors' => [
                     'Origin' => ['*'],
-                    'Access-Control-Allow-Origin' => ['*'],
-                    'Access-Control-Expose-Headers' => ['*'],
+                    'Access-Control-Allow-Origin' => ['*'],//跨域请求
+                    'Access-Control-Expose-Headers' => ['*'],//分页头头部
                 ],
                 'actions' => [
                     ['*']
