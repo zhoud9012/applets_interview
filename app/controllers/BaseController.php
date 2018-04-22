@@ -19,6 +19,7 @@ Abstract class BaseController extends \yii\rest\Controller
                 'cors' => [
                     'Origin' => ['*'],
                     'Access-Control-Allow-Origin' => ['*'],
+                    'Access-Control-Expose-Headers' => ['*'],
                 ],
                 'actions' => [
                     ['*']
