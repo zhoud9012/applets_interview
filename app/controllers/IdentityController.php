@@ -93,7 +93,7 @@ class IdentityController extends BaseController
         //非面试官返回试题类型 面试官返回候选人
         $identityRole = $this->__isInterviewer($openid);
         
-        return $identityRole;
+        return ['role'=>$identityRole];
 
     }
 
@@ -114,7 +114,7 @@ class IdentityController extends BaseController
     {
 
         $query = $this->__getInterviewerInfoByOpenid($openid);
-        return empty($query)?false:true;
+        return empty($query)?'candidates':'interviewer';
     }
 
     private function __getCandidatesInfoByOpenid($openid)

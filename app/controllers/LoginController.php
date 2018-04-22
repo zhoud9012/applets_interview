@@ -79,7 +79,7 @@ class LoginController extends BaseController
         $accessToken = $this->__makeAccessToken($session,3600*7*24);
 
         //返回用户token
-        return $accessToken;
+        return ['accessToken'=>$accessToken];
 
         //todo 1.通过手机号找到改用户将获取到的openid更新用户表,交换token 增加token 频率
         //todo 2.以后其他接口都通过校验token获得访问权限
@@ -133,10 +133,10 @@ class LoginController extends BaseController
         $openid = $session->getOpenid(); //openid
         $session_key = $session->getSessionKey(); //session_key
 
-        $accessToken = $this->__makeThirdSession('token:',1);
+        $accessToken = $this->__makeThirdSession(1);
 
-        \Yii::$app->cache->redis->hmset($accessToken, 'openid', $openid,'session_key',$session_key);
-        \Yii::$app->cache->redis->expire($accessToken,$time);
+        \Yii::$app->cache->redis->hmset('token:'.$accessToken, 'openid', $openid,'session_key',$session_key);
+        \Yii::$app->cache->redis->expire('token:'.$accessToken,$time);
 
         return $accessToken;
     }
@@ -146,11 +146,11 @@ class LoginController extends BaseController
      * @param $type
      * @return mixed
      */
-    private function __makeThirdSession($prefix,$type){
+    private function __makeThirdSession($type){
 
-        $uuid = $prefix.StringHelper::uuid();
+        $uuid = StringHelper::uuid();
         $command = 'head /dev/urandom | tr -dc A-Za-z0-9 | head -c 168';
-        $random = $prefix.exec($command);
+        $random = exec($command);
         $list = ['index0',$uuid,$random];
 
         return $list[$type];
