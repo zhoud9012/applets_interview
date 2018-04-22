@@ -76,13 +76,12 @@ class InterviewerInfoController extends BaseController
         $paramsArr = $request->get();
 
         $query = $this->__getSummaryInterviewer($paramsArr);
-        //$this->response->statusCode = 500;//自定义HTTP返回码
-        ErrorInfo::setAndReturn('0010101' );
+        $pageSize = empty($paramsArr['pageSize'])?20:$paramsArr['pageSize'];
 
         return new ActiveDataProvider(
             [
                 'query'=>$query,
-                'pagination'=>['pageSize'=>$paramsArr['pageSize']],//分页大小设置
+                'pagination'=>['pageSize'=>$pageSize],//分页大小设置
             ]
         );
     }
