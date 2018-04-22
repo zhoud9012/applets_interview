@@ -82,6 +82,7 @@ class QuestionRelationOfficeController extends BaseController
         $paramsArr = $request->get();
 
         $query = $this->__getQuestionRelationOffice();
+
         $pageSize = empty($paramsArr['pageSize'])?20:$paramsArr['pageSize'];
 
         return new ActiveDataProvider(
@@ -96,15 +97,15 @@ class QuestionRelationOfficeController extends BaseController
     {
         $query = (new Query())
             ->select([
-                'question_relation_office.relation_id',
-                'question_info.question_id',
-                'question_info.question_name',
-                'office_info.office_id',
-                'office_info.office_name'
+                'question_relation_office.relation_id AS relation_id',
+                'question_info.question_name AS question_name',
+                'office_info.office_id AS office_id',
+                'office_info.office_name AS office_name'
             ])
             ->from('question_relation_office')
+            ->leftJoin('office_info','office_info.office_id = question_relation_office.office_id')
             ->leftJoin('question_info','question_relation_office.question_id = question_info.question_id')
-            ->leftJoin('office_info','office_info.office_id = question_relation_office.office_id');
+            ->groupBy('office_id');
         return $query;
     }
 
