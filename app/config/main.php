@@ -65,7 +65,9 @@ return [
                         'GET export-summary-candidates-info-csv' => 'export-summary-candidates-info-csv', //http 动词 参数    动作名
                         'GET export-dynamic-candidates-info-csv' => 'export-dynamic-candidates-info-csv', //http 动词 参数    动作名
                         'POST import-summary-candidates-info' => 'import-summary-candidates-info', //http 动词 参数    动作名
+                        'OPTIONS import-summary-candidates-info' => 'import-summary-candidates-info', //http 动词 参数    动作名
                         'PUT update' => 'update', //http 动词 参数    动作名
+                        'OPTIONS update' => 'update', //http 动词 参数    动作名
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
@@ -74,7 +76,9 @@ return [
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
                         'POST create' => 'create', //http 动词 参数    动作名
-                        'PUT update' => 'update' //http 动词 参数    动作名
+                        'OPTIONS create' => 'create', //http 动词 参数    动作名
+                        'PUT update' => 'update', //http 动词 参数    动作名
+                        'OPTIONS update' => 'update', //http 动词 参数    动作名
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
@@ -85,7 +89,7 @@ return [
                         'OPTIONS create' => 'create', //http 动词 参数    动作名
                         'POST create' => 'create', //http 动词 参数    动作名
                         'OPTIONS update' => 'update', //http 动词 参数    动作名
-                        'PUT update' => 'update' //http 动词 参数    动作名
+                        'PUT update' => 'update', //http 动词 参数    动作名
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
@@ -94,7 +98,9 @@ return [
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
                         'POST create' => 'create', //http 动词 参数    动作名
-                        'PUT update' => 'update' //http 动词 参数    动作名
+                        'OPTIONS create' => 'create', //http 动词 参数    动作名
+                        'PUT update' => 'update', //http 动词 参数    动作名
+                        'OPTIONS update' => 'update', //http 动词 参数    动作名
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
@@ -103,7 +109,9 @@ return [
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
                         'POST create' => 'create', //http 动词 参数    动作名
-                        'PUT update' => 'update' //http 动词 参数    动作名
+                        'OPTIONS create' => 'create', //http 动词 参数    动作名
+                        'PUT update' => 'update', //http 动词 参数    动作名
+                        'OPTIONS update' => 'update', //http 动词 参数    动作名
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
@@ -112,7 +120,9 @@ return [
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
                         'POST create' => 'create', //http 动词 参数    动作名
-                        'PUT update' => 'update' //http 动词 参数    动作名
+                        'OPTIONS create' => 'create', //http 动词 参数    动作名
+                        'PUT update' => 'update', //http 动词 参数    动作名
+                        'OPTIONS update' => 'update', //http 动词 参数    动作名
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
@@ -121,7 +131,9 @@ return [
                     'pluralize'=>false,
                     'extraPatterns'=>[// 为方法配置restful 请求
                         'POST create' => 'create', //http 动词 参数    动作名
-                        'PUT update' => 'update' //http 动词 参数    动作名
+                        'OPTIONS create' => 'create', //http 动词 参数    动作名
+                        'PUT update' => 'update', //http 动词 参数    动作名
+                        'OPTIONS update' => 'update', //http 动词 参数    动作名
                     ],
                 ],
             ],
