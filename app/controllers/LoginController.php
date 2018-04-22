@@ -2,7 +2,6 @@
 
 namespace app\controllers;
 
-use common\support\OSS;
 use common\support\StringHelper;
 use common\error\ErrorInfo;
 use app\models\UserApplet;
@@ -74,14 +73,20 @@ class LoginController extends BaseController
         $applet = \Yii::$app->applet->makeSession($paramsArr['code']);
         $session = $applet->getSession();
 
+        //注册用户绑定手机号与openId
         $this->__userBindOpenId($session,$paramsArr['phone']);
-        $this->__makeAccessToken($session,3600*7*24);
+        //生成token 设置生命周期
+        $accessToken = $this->__makeAccessToken($session,3600*7*24);
+
+        //返回用户token
+        return $accessToken;
 
         //todo 1.通过手机号找到改用户将获取到的openid更新用户表,交换token 增加token 频率
         //todo 2.以后其他接口都通过校验token获得访问权限
         //todo 3.通过token查询出对应openid
         //todo 4.然后通过openid联合查询确定该接口都具体权限
         //todo 5.具体接口通过token获取到的
+        //todo 6.有token 一定有openid
 
     }
 
