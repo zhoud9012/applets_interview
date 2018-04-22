@@ -84,6 +84,7 @@ return [
                     'extraPatterns'=>[// 为方法配置restful 请求
                         'OPTIONS create' => 'create', //http 动词 参数    动作名
                         'POST create' => 'create', //http 动词 参数    动作名
+                        'OPTIONS update' => 'update', //http 动词 参数    动作名
                         'PUT update' => 'update' //http 动词 参数    动作名
                     ],
                 ],

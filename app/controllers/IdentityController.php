@@ -87,18 +87,37 @@ class IdentityController extends BaseController
         //todo 1.依据token 查openid
         //todo 2.通过openid 查是否为面试官权限重写如果面试官表中能获取到记录则就是面试官否则是应试者
 
-        return $this->__isInterviewer('token:'.$paramsArr['access-token']);
+        $accessToken = 'token:'.$paramsArr['access-token'];
+        $openid =\Yii::$app->cache->redis->HGET($accessToken,'openid');
+
+        //非面试官返回试题类型 面试官返回候选人
+        $identityRole = $this->__isInterviewer($openid);
+        
+        return $identityRole;
 
     }
 
-    private function __isInterviewer($accessToken)
+
+    private function __getInterviewerInfoByOpenid($openid)
     {
-        $openid =\Yii::$app->cache->redis->HGET($accessToken,'openid');
+        return (new Query())
+            ->select([
+                'interviewer_info.interviewer_id'
+            ])
+            ->from('user_applet')
+            ->innerJoin('interviewer_info','user_applet.phone = interviewer_info.phone')
+            ->where(['user_applet.openid'=>$openid])
+            ->all();
+    }
+
+    private function __isInterviewer($openid)
+    {
+
         $query = $this->__getInterviewerInfoByOpenid($openid);
         return empty($query)?false:true;
     }
 
-    private function __getInterviewerInfoByOpenid($openid)
+    private function __getCandidatesInfoByOpenid($openid)
     {
         return (new Query())
             ->select([
