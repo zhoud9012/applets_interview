@@ -14,7 +14,9 @@ class ErrorMsg
     public static $errMsg = [
 
         /*业务错误*/
-        ErrorCode::ERR_CANDIDATES_INFO => '应试者信息过滤查询信息为空',
+        ErrorCode::ERR_CANDIDATES_INFO_A => '应试者信息过滤查询信息为空',
+        ErrorCode::ERR_WECHAT_LOGIN_INFO_A => '微信登陆必须传Code',
+        ErrorCode::ERR_WECHAT_LOGIN_INFO_B => '需要手机号确认角色',
 
         /*系统错误*/
         //上传错误

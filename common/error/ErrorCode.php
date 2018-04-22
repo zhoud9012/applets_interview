@@ -18,7 +18,9 @@ class ErrorCode
      */
 
     /*业务错误*/
-    const ERR_CANDIDATES_INFO = '0010101';   //应试者信息过滤查询
+    const ERR_CANDIDATES_INFO_A = '0010101';   //应试者信息过滤查询
+    const ERR_WECHAT_LOGIN_INFO_A = '0010201';   //微信登陆必须传Code
+    const ERR_WECHAT_LOGIN_INFO_B = '0010202';   //需要手机号确认角色
 
     /*系统错误*/
 

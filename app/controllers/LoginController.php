@@ -70,7 +70,18 @@ class LoginController extends BaseController
         $request = \Yii::$app->request;
         $paramsArr = $request->get();
 
+        if(empty($paramsArr['code'])){
+            $this->response->statusCode = 501;//自定义HTTP返回码
+            ErrorInfo::setAndReturn('0010201');
+        }
+
+        if($paramsArr['phone']){
+            $this->response->statusCode = 501;//自定义HTTP返回码
+            ErrorInfo::setAndReturn('0010202');
+        }
+
         $applet = \Yii::$app->applet->makeSession($paramsArr['code']);
+
         $session = $applet->getSession();
 
         //注册用户绑定手机号与openId
