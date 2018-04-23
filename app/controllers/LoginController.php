@@ -75,7 +75,7 @@ class LoginController extends BaseController
             ErrorInfo::setAndReturn('0010201');
         }
 
-        if($paramsArr['phone']){
+        if(empty($paramsArr['phone'])){
             $this->response->statusCode = 501;//自定义HTTP返回码
             ErrorInfo::setAndReturn('0010202');
         }
