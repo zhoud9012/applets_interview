@@ -97,8 +97,8 @@ class QuestionRelationOfficeController extends BaseController
     {
         $query = (new Query())
             ->select([
-                'question_relation_office.relation_id AS relation_id',
-                'question_info.question_name AS question_name',
+                'any_value(question_relation_office.relation_id) AS relation_id',
+                'any_value(question_info.question_name) AS question_name',
                 'office_info.office_id AS office_id',
                 'office_info.office_name AS office_name'
             ])
@@ -106,6 +106,8 @@ class QuestionRelationOfficeController extends BaseController
             ->leftJoin('office_info','office_info.office_id = question_relation_office.office_id')
             ->leftJoin('question_info','question_relation_office.question_id = question_info.question_id')
             ->groupBy('office_id');
+            //->createCommand()->getRawSql();
+
         return $query;
     }
 
