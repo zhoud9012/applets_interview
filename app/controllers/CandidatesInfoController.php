@@ -526,7 +526,7 @@ class CandidatesInfoController extends BaseController
             ->innerJoin('question_relation_office','question_relation_office.office_id = office_info.office_id')
             ->innerJoin('question_info','question_info.question_id = question_relation_office.question_id')
             ->where([
-                'openid'=>$openid
+                'user_applet.openid'=>$openid
             ])
             //->createCommand()->getRawSql();
             ->all();
