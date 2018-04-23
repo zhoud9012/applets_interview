@@ -181,7 +181,7 @@ class InterviewerInfoController extends BaseController
             ->from('interviewer_info')
             ->innerJoin('user_applet','user_applet.phone = interviewer_info.phone')
             ->leftJoin('candidates_info','candidates_info.interviewer_id = interviewer_info.interviewer_id')
-            ->innerJoin('office_info','office_info.office_id = candidates_info.office_id')
+            ->leftJoin('office_info','office_info.office_id = candidates_info.office_id')
             ->where([
                 'user_applet.openid'=>$openid
             ])
