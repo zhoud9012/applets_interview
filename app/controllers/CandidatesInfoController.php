@@ -567,4 +567,17 @@ class CandidatesInfoController extends BaseController
             ->all();
     }
 
+    public function actionFinishExam()
+    {
+        $request = \Yii::$app->request;
+        $paramsArr = $request->post();
+
+        $candidatesInfo = CandidatesInfo::find()->where(['candidates_id'=>$paramsArr['candidates_id']])->one();
+        $candidatesInfo->setScenario('finish_exam');
+        $candidatesInfo->interview_state = 3;
+        $candidatesInfo->save();
+
+        return $candidatesInfo->primaryKey;
+    }
+
 }

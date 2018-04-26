@@ -41,6 +41,7 @@ class CandidatesInfo extends \yii\db\ActiveRecord
         return [
             'create' => ['phone', 'name', 'office_id', 'interviewer_id', 'company_id'],
             'update' => ['phone', 'name', 'office_id', 'interviewer_id', 'company_id'],
+            'finish_exam' => ['interview_state'],
             'review' => ['interview_state', 'interview_result', 'interview_appraise', 'written_test_appraise'],
         ];
     }

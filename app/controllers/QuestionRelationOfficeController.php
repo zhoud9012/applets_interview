@@ -116,7 +116,7 @@ class QuestionRelationOfficeController extends BaseController
         $request = \Yii::$app->request;
 
         // 返回所有参数
-        $paramsArr = $request->bodyParams;
+        $paramsArr = $request->bodyParams;//postman 请求就用raw json 格式
         // 返回参数 "id"
         //$paramsArr = $request->getBodyParam('id');
 

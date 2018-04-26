@@ -70,6 +70,8 @@ return [
                         'OPTIONS import-summary-candidates-info' => 'import-summary-candidates-info', //http 动词 参数    动作名
                         'PUT update' => 'update', //http 动词 参数    动作名
                         'OPTIONS update' => 'update', //http 动词 参数    动作名
+                        'PUT finish-exam' => 'finish-exam', //http 动词 参数    动作名
+                        'OPTIONS finish-exam' => 'finish-exam', //http 动词 参数    动作名
                     ],
                 ],
                 ['class'=>'yii\rest\UrlRule',
