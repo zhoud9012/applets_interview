@@ -110,7 +110,8 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
         //findIdentityByAccessToken()方法的实现是系统定义的
         //例如，一个简单的场景，当每个用户只有一个access token, 可存储access token 到user表的access_token列中， 方法可在User类中简单实现，如下所示：
         $tokenExist =\Yii::$app->cache->redis->exists('token:'.$token);
-        $resetToken = $tokenExist?'123':uniqid();
+        $usr_access_token = \yii::$app->params['usr_access_token'];
+        $resetToken = $tokenExist?$usr_access_token:uniqid();
         return static::findOne(['access_token' => $resetToken]);
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
